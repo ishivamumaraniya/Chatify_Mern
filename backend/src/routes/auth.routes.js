@@ -1,6 +1,5 @@
 import express from "express";
 import { login, logout, signUp, updateProfile } from "../controllers/auth.controller.js";
-import { sendFCM } from "../controllers/firebase_notification.js";
 import { protectRoute } from "../lib/middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -8,7 +7,6 @@ const router = express.Router();
 // router.use(arcjetProtection);
 
 router.post("/signup", signUp);
-router.get("/send", sendFCM);
 
 router.post("/login", login);
 router.post("/logout", logout);
