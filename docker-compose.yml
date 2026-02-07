@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chatify-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      MONGO_URI: "mongodb+srv://shivamumaraniya2_db_user:NmeJkgcpfVKDj3nf@cluster0.gxcz3kf.mongodb.net/chatify_db?retryWrites=true&w=majority&appName=Cluster0"
+      JWT_SECRET: "mySecretKeyOfChatifyProjectInNodeJsandReactJs"
+      RESEND_API_KEY: "re_duL6hhJx_Ae6AtDycAmgrnsASGoFLmJ3E"
+      CLOUD_NAME: "digcoilgx"
+      CLOUD_API: "187579775135561"
+      CLOUD_SECRET: "NKwWWMSaqirwKQSMrtLD5VswNRY"
+      ARCJET_KEY: "ajkey_01k6ja6c3aetas5tq1sq598t28"
+      ARCJET_ENV: "production"
+      CLIENT_URL: "http://13.221.76.64"
+    networks:
+      - chatify-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chatify-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - chatify-network
+
+networks:
+  chatify-network:
+    driver: bridge
