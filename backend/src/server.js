@@ -38,7 +38,7 @@ app.use("/api/message", messageRoutes)
 // Health check endpoint for Docker and AWS
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'Github actions are healthy', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'Github actions are healthy 1', timestamp: new Date().toISOString() });
 });
 
 
