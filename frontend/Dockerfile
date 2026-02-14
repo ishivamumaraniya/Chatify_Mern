@@ -31,3 +31,9 @@ HEALTHCHECK --interval=30s --timeout=3s \
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
+
+
