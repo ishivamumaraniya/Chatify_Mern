@@ -14,16 +14,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Login to DockerHub
+      - name: Install Dependencies
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} \
-                       -p ${{ secrets.DOCKER_PASSWORD }}
+          cd frontend
+          npm install
 
-      - name: Build and Push Frontend Image
+      - name: Build Frontend
         run: |
-          docker buildx build --platform linux/amd64 \
-            -t shivamumaraniya/chatify-frontend:latest \
-            ./frontend --push
+          cd frontend
+          npm run build
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -32,8 +31,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Trigger ASG Instance Refresh
+      - name: Upload to S3
         run: |
-          aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name asg-frontend \
-            --preferences '{"MinHealthyPercentage": 50}'
+          aws s3 sync frontend/dist/ s3://chatify-s3-frontend --delete
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E1PPSIAJIDP9M \
+            --paths "/*"
